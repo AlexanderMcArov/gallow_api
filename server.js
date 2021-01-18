@@ -2,6 +2,8 @@ const express = require('express')
 const session = require('express-session');
 const cors = require("cors")
 
+const bird = require('./bird')
+
 const { FgYellow, FgGreen } = require('./colors')
 const { word_list } = require('./data');
 
@@ -20,6 +22,8 @@ app.use(session({
 }))
 
 // Access the session as req.session
+
+app.use('/bird', bird)
 
 app.get('/v2/word', function (req, res) {
     const index = Math.floor(Math.random() * word_list.length)
