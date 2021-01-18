@@ -3,7 +3,8 @@ let btn_finish = document.querySelector('#btn_finish')
 let game_detail = document.querySelector('.game_detail')
 let detail_desc = game_detail.querySelector('.statics .discription')
 let detail_word = game_detail.querySelector('.statics .word')
-
+let loading = document.querySelector('.loading')
+loading.style.display = "none"
 // game_status - отвечает за текущий игровой статус в игре.
 let game_status = {
     win() {
@@ -91,6 +92,8 @@ function finishGame() {
  * и устанавливает описание
  */
 async function setWord() {
+    loading.style.display = "block"
+
     fetch('word')
         .then(res => res.json())
         .then(data => {
@@ -102,6 +105,8 @@ async function setWord() {
                 btn.addEventListener('click', (e) => {
                     checkWord(e.target, data.len)
                 })
+                loading.style.display = "none"
+
                 btn.innerHTML = "X"
                 detail_word.appendChild(btn)
             }
@@ -115,7 +120,7 @@ async function setWord() {
 async function checkWord(target, len) {
 
     let id = target.id
-
+    document.querySelector('.loading').style.display = "block"
     let getLet = prompt('Введите букву').toLocaleLowerCase()
     fetch('pos/' + id + '/sym/' + getLet[0])
         .then(res => res.json())
