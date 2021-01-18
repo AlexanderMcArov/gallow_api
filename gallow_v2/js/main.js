@@ -120,6 +120,9 @@ async function checkWord(target, len) {
     fetch('pos/' + id + '/sym/' + getLet[0])
         .then(res => res.json())
         .then(data => {
+            console.log(data)
+            document.querySelector('.game_table .status').innerHTML = data
+
             switch (data.message) {
                 case "answer": {
                     target.innerHTML = getLet[0]

@@ -24,24 +24,25 @@ app.use(session({
 app.get('/v2/word', function (req, res) {
     const index = Math.floor(Math.random() * word_list.length)
     let getWord = word_list[index]
-    req.session.id.wordid = index
-    req.session.id.answer = 0
-    req.session.id.error = 0
+    req.session.wordid = index
+    req.session.answer = 0
+    req.session.error = 0
     res.json({ desc: getWord.desc, len: getWord.word.length })
 })
 
 app.get('/v2/pos/:pos/sym/:sym', function (req, res) {
     console.log(req.params)
+    res.json(req.session.id)
     const { pos, sym } = req.params
-    let word = word_list[req.session.id.wordid]
+    let word = word_list[req.session.wordid]
     if (word.word[pos] == sym) {
-        req.session.id.answer++
-        if (req.session.id.answer == word.word.length) res.json({ message: 'win', answer: word.word.length, sym: sym })
-        res.json({ message: 'answer', answer: req.session.id.answer })
+        req.session.answer++
+        if (req.session.answer == word.word.length) res.json({ message: 'win', answer: word.word.length, sym: sym })
+        res.json({ message: 'answer', answer: req.session.answer })
     } else {
-        req.session.id.error++
-        if (req.session.id.error == 7) res.json({ message: 'lose', error: 7 })
-        res.json({ message: 'error', error: req.session.id.error })
+        req.session.error++
+        if (req.session.error == 7) res.json({ message: 'lose', error: 7 })
+        res.json({ message: 'error', error: req.session.error })
     }
 })
 
