@@ -118,13 +118,14 @@ async function setWord() {
  * обновляет статус игры
  */
 async function checkWord(target, len) {
-
+    loading.style.display = "block"
     let id = target.id
     document.querySelector('.loading').style.display = "block"
     let getLet = prompt('Введите букву').toLocaleLowerCase()
     fetch('pos/' + id + '/sym/' + getLet[0])
         .then(res => res.json())
         .then(data => {
+            loading.style.display = "none"
             switch (data.message) {
                 case "answer": {
                     target.innerHTML = getLet[0]
