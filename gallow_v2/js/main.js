@@ -94,14 +94,13 @@ async function setWord() {
     fetch('word')
         .then(res => res.json())
         .then(data => {
-            console.log(data)
             detail_desc.innerHTML = data.desc
             // добавляет кнопки 
             for (let i = 0; i < data.len; i++) {
                 let btn = document.createElement('button')
                 btn.setAttribute('id', i)
                 btn.addEventListener('click', (e) => {
-                    checkWord(e.target, data)
+                    checkWord(e.target, data.len)
                 })
                 btn.innerHTML = "X"
                 detail_word.appendChild(btn)
@@ -113,37 +112,35 @@ async function setWord() {
  * checkWord - проверяет введеную букву
  * обновляет статус игры
  */
-async function checkWord(target, data) {
-    let { id: word_id, len } = data
+async function checkWord(target, len) {
+
     let id = target.id
+
     let getLet = prompt('Введите букву').toLocaleLowerCase()
-    fetch('word/' + word_id + '/pos/' + id + '/sym/' + getLet[0])
+    fetch('pos/' + id + '/sym/' + getLet[0])
         .then(res => res.json())
         .then(data => {
-            console.log(data)
-            let { message } = data
-            if (message) {
-                target.innerHTML = getLet[0]
-                answer++
-            } else {
-                game_body[errorCount].style.display = "block"
-                errorCount++
+            switch (data.message) {
+                case "answer": {
+                    target.innerHTML = getLet[0]
+                    answer = data.answer
+                } break
+                case "error": {
+                    game_body[errorCount].style.display = "block"
+                    errorCount = data.error
+                } break
+                case "win": {
+                    finishGame()
+                    game_status.win()
+                } break
+                case "lose": {
+                    finishGame()
+                    game_status.lose()
+                } break
             }
-
-            if (errorCount == game_body.length) {
-                finishGame()
-                game_status.lose()
-            }
-
-            if (answer == len) {
-                finishGame()
-                game_status.win()
-            }
+            console.log("Длина слова: ", len,
+                "\nКоличество ошибок:", errorCount, "из", game_body.length,
+                "\nКоличество правильных:", answer, "из", len)
         })
 
-
-
-    // console.log("Длина слова: ", word.length,
-    //     "\nКоличество ошибок:", errorCount, "из", game_body.length,
-    //     "\nКоличество правильных:", answer, "из", word.length)
 }

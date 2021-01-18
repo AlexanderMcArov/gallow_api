@@ -1,8 +1,10 @@
 const express = require('express')
+const session = require('express-session');
 const cors = require("cors")
 
 const { FgYellow, FgGreen } = require('./colors')
-const { word_list } = require('./data')
+const { word_list } = require('./data');
+const { json } = require('express');
 
 const app = express()
 
@@ -10,33 +12,32 @@ app.use(cors())
 app.use('/', express.static('gallow'))
 app.use('/v2', express.static('gallow_v2'))
 
-const myLogger = function (req, res, next) {
-    console.log("logger")
-    next()
-}
+app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 60000 } }))
 
-app.use(myLogger)
+// Access the session as req.session
 
 app.get('/v2/word', function (req, res) {
-    let getWord = word_list[Math.floor(Math.random() * word_list.length)]
-    getWord.len = getWord.word.length
-    res.json({ ...getWord, word: '' })
+    const index = Math.floor(Math.random() * word_list.length)
+    let getWord = word_list[index]
+    req.session.wordid = index
+    req.session.answer = 0
+    req.session.error = 0
+    res.json({ desc: getWord.desc, len: getWord.word.length })
 })
 
-app.get('/v2/word/:id/pos/:pos/sym/:sym', function (req, res) {
+app.get('/v2/pos/:pos/sym/:sym', function (req, res) {
     console.log(req.params)
-    const { id, pos, sym } = req.params
-    word_list.forEach(item => {
-        if (item.id == id) {
-            console.log(item.id, id)
-            console.log(item.word[pos], sym)
-            if (item.word[pos] == sym) {
-                res.json({ message: true })
-            } else {
-                res.json({ message: false })
-            }
-        }
-    })
+    const { pos, sym } = req.params
+    let word = word_list[req.session.wordid]
+    if (word.word[pos] == sym) {
+        req.session.answer++
+        if (req.session.answer == word.word.length) res.json({ message: 'win', answer: word.word.length, sym: sym })
+        res.json({ message: 'answer', answer: req.session.answer })
+    } else {
+        req.session.error++
+        if (req.session.error == 7) res.json({ message: 'lose', error: 7 })
+        res.json({ message: 'error', error: req.session.error })
+    }
 })
 
 app.listen(3000, () => console.log(FgYellow + '[Gallow-Server]:' + FgGreen + ' Сервер запущен.'))
