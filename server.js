@@ -12,7 +12,12 @@ app.use(cors())
 app.use('/', express.static('gallow'))
 app.use('/v2', express.static('gallow_v2'))
 
-app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 60000 } }))
+app.use(session({
+    secret: 'keyboard cat',
+    cookie: { maxAge: 60000 },
+    resave: true,
+    saveUninitialized: true
+}))
 
 // Access the session as req.session
 
