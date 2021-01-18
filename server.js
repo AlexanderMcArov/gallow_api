@@ -4,10 +4,10 @@ const cors = require("cors")
 
 const { FgYellow, FgGreen } = require('./colors')
 const { word_list } = require('./data');
-const { json } = require('express');
 
 const app = express()
 
+app.set('port', (process.env.PORT || 3000));
 app.use(cors())
 app.use('/', express.static('gallow'))
 app.use('/v2', express.static('gallow_v2'))
@@ -40,4 +40,4 @@ app.get('/v2/pos/:pos/sym/:sym', function (req, res) {
     }
 })
 
-app.listen(3000, () => console.log(FgYellow + '[Gallow-Server]:' + FgGreen + ' Сервер запущен.'))
+app.listen(app.get('port'), () => console.log(FgYellow + '[Gallow-Server]:' + FgGreen + ' Сервер запущен.'))
