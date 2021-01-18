@@ -31,8 +31,6 @@ app.get('/v2/word', function (req, res) {
 })
 
 app.get('/v2/pos/:pos/sym/:sym', function (req, res) {
-    console.log(req.params)
-    res.json(req.session.id)
     const { pos, sym } = req.params
     let word = word_list[req.session.wordid]
     if (word.word[pos] == sym) {
