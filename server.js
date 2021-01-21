@@ -36,10 +36,10 @@ app.get('/v2/word', function (req, res) {
 
 app.get('/v2/pos/:pos/sym/:sym', function (req, res) {
     const { pos, sym } = req.params
-    let word = word_list[req.session.wordid]
-    if (word.word[pos] == sym) {
+    let word = word_list[req.session.wordid].word
+    if (word[pos] == sym) {
         req.session.answer++
-        if (req.session.answer == word.word.length) res.json({ message: 'win', answer: word.word.length, sym: sym })
+        if (req.session.answer == word.length) res.json({ message: 'win', answer: word.length, sym: sym })
         res.json({ message: 'answer', answer: req.session.answer })
     } else {
         req.session.error++
